@@ -1,0 +1,351 @@
+--Table 1 for DimEpitype 
+	--This code is used to drop table initially if Table does exist
+IF OBJECT_ID ('dbo.DimEpitype') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.DimEpitype
+END
+	--The code is written for Epitype (Episode Type) as per the HES Handbook. I have used a Case When function to include all the different scenarios especially when '0' is present.
+SELECT DISTINCT
+     epitype as ID,
+	 CASE
+	 When epitype = '0' then 'General Episode'
+   WHEN epitype = '1' THEN 'General Episode'
+   WHEN epitype = '2' THEN 'Delivery Episode'
+	 When epitype = '3' Then 'Birth Episode'
+	 When epitype = '4' then 'Formally detained under the provisions of mental health legislation'
+	 When epitype = '5' then 'Other Delivery Event'
+	 When epitype = '6' then 'Other Birth Event'
+	 END AS DESCRIPTION
+	 INTO dbo.DimEpitype
+FROM RawNHS
+
+--Table 2 for DimSex
+
+IF OBJECT_ID ('dbo.DimSex') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.DimSex
+END
+SELECT DISTINCT
+     sex as ID,
+	 CASE
+	 When sex = '0' then 'Not Known'
+     WHEN sex = '1' THEN 'Male'
+     WHEN sex = '2' THEN 'Female'
+	 When sex = '3' Then 'Indeterminate, including those going sex change operations'
+	 When sex = '9' then 'Not specified'
+	 END AS DESCRIPTION
+	 INTO dbo.DimSex
+FROM RawNHS
+
+--Table 3 for DimEpistat
+
+IF OBJECT_ID ('dbo.DimEpistat') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.DimEpistat
+END
+SELECT DISTINCT
+     epistat as ID,
+	 CASE
+	 WHEN Epistat = '1' THEN 'Unfinished'
+	 When Epistat = '3' Then 'Finished'
+	 When Epistat = '9' then 'Derived Unfinished'
+	 END AS DESCRIPTION
+	 INTO dbo.DimEpistat
+From RawNHS
+
+--Table 4 for DimEthnos 
+
+IF OBJECT_ID ('dbo.DimEthnos') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.DimEthnos
+END
+SELECT DISTINCT
+     ethnos as ID,
+	 CASE
+	 When ethnos = 'A' then 'British (White)'
+     WHEN ethnos = 'B' THEN 'Irish (White)'
+     WHEN ethnos = 'C' THEN 'Any other White background'
+	 When ethnos = 'D' Then 'White and Black Caribbean (Mixed)'
+	 When ethnos = 'E' then 'White and Black African (Mixed)'
+	 When ethnos = 'F' then 'White and Asian (Mixed)'
+	 When ethnos = 'G' then 'Any other Mixed Background'
+	 When ethnos = 'H' THEN 'Indian (Asian or Asian British)'
+	 When ethnos = 'J' THEN 'Pakistani (Asian or Asian British)'
+	 When ethnos = 'K' THEN 'Bangladeshi (Asian or Asian British)'
+	 When ethnos = 'L' THEN 'Any other Asian background'
+	 When ethnos = 'M' THEN 'Caribbean (Black or Black British)'
+	 When ethnos = 'N' THEN 'African (Black or Black British)'
+	 When ethnos = 'P' THEN 'Any other Black background'
+	 When ethnos = 'R' THEN 'Chinese (other ethnic group)'
+	 When ethnos = 'S' THEN 'Any other ethnic group'
+	 When ethnos = 'Z' THEN 'Not stated'
+	 When ethnos = 'X' THEN 'Not Known'
+	 When ethnos = '99' Then 'Not known'
+	 When ethnos = '0'	Then 'White'
+	 When ethnos = '1'	Then 'Black - Caribbean'
+	 When ethnos = '2'	Then 'Black - African'
+	 When ethnos = '3'	Then 'Black - Other'
+	 When ethnos = '4'	Then 'Indian'
+	 When ethnos = '5'	Then 'Pakistani'
+	 When ethnos = '6'	Then 'Bangladeshi'
+	 When ethnos = '7'	Then 'Chinese'
+	 When ethnos = '8'	Then 'Any other ethnic group'
+	 When ethnos = '9'	Then 'Not given'
+	 When ethnos = '  ' then 'Not available'
+	 END AS DESCRIPTION
+	 INTO dbo.DimEthnos
+FROM RawNHS
+
+--Table 5 for DimAdminCat
+
+IF OBJECT_ID ('dbo.DimAdminCat') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.DimAdminCat
+END
+SELECT DISTINCT
+     admincat as ID,
+	 CASE
+	 When admincat = '1' then 'NHS patient'
+     WHEN admincat = '2' THEN 'Private patient'
+     WHEN admincat = '3' THEN 'Amenity Patient'
+	 When admincat = '4' Then 'A category II patient'
+	 When admincat = '98' then 'Not applicable'
+	 When admincat = '99' then 'Not Known'
+	 END AS DESCRIPTION
+	 INTO dbo.DimAdminCat
+FROM RawNHS
+
+--Table 6 for DimCat
+
+IF OBJECT_ID ('dbo.DimCat') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.DimCat
+End
+SELECT DISTINCT
+     category as ID,
+	 CASE
+	 When category = 10 then 'NHS patient: not formally detained'
+     WHEN category = '11' THEN 'NHS patient: formally detained under Part II of the Mental Health Act 1983 '
+     WHEN category = '12' THEN 'NHS patient: formally detained under Part III of the Mental Health Act 1983 or under other Acts '
+	 When category = '13' Then 'NHS patient: formally detained under part X, Mental Health Act 1983'
+	 When category = '20' then 'Private patient: not formally detained'
+	 When category = '21' then 'Private patient: formally detained under Part II of the Mental Health Act 1983'
+	 When category = '22' Then 'Private patient: formally detained under Part III of the Mental Health Act 1983 or under other Acts'
+	 When category = '23' then 'Private patient: formally detained under part X, Mental health Act 1983'
+	 When category = '30' then 'Amenity patient: not formally detained'
+	 When category = '31' then 'Amenity patient: formally detained under Part II of the Mental Health Act 1983 '
+	 When category = '32' Then 'Amenity patient: formally detained under Part III of the Mental Health Act 1983 or under other Acts'
+	 When category = '33' then 'Amenity patient: formally detained under part X, Mental health Act 1983'
+	 When category = 'Null' then 'Other maternity event'
+	 	 END AS DESCRIPTION
+	 INTO dbo.DimCat
+FROM RawNHS
+
+--Table 7 for DimLeglCat
+
+IF OBJECT_ID ('dbo.Dimleglcat') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.Dimleglcat
+End
+SELECT DISTINCT
+     leglcat as ID,
+	 CASE
+	When LeglCat = '01' Then 'Informal'   
+	When LeglCat = '02' Then 'Formally detained under the Mental Health Act, Section 2'   
+	When LeglCat = '03' Then 'Formally detained under the Mental Health Act, Section 3'   
+	When LeglCat = '04' Then 'Formally detained under the Mental Health Act, Section 4'   
+	When LeglCat = '05' Then 'Formally detained under the Mental Health Act, Section 5(2)'   
+	When LeglCat = '06' Then 'Formally detained under the Mental Health Act, Section 5(4)'   
+	When LeglCat = '07' Then 'Formally detained under the Mental Health Act, Section 35'   
+	When LeglCat = '08' Then 'Formally detained under the Mental Health Act, Section 36'   
+	When LeglCat = '09' Then 'Formally detained under the Mental Health Act, Section 37 with Section 41 restrictions'   
+	When LeglCat = '10' Then 'Formally detained under the Mental Health Act, Section 37 excluding Section 37(4)'   
+	When LeglCat = '11' Then 'Formally detained under the Mental Health Act, Section 37(4)'   
+	When LeglCat = '12' Then 'Formally detained under the Mental Health Act, Section 38'
+	When LeglCat = '13' Then 'Formally detained under the Mental Health Act, Section 44'   
+	When LeglCat = '14' Then 'Formally detained under the Mental Health Act, Section 46'   
+	When LeglCat = '15' Then 'Formally detained under the Mental Health Act, Section 47 with Section 49 restrictions'   
+	When LeglCat = '16' Then 'Formally detained under the Mental Health Act, Section 47'   
+	When LeglCat = '17' Then 'Formally detained under the Mental Health Act, Section 48 with Section 49 restrictions'   
+	When LeglCat = '18' Then 'Formally detained under the Mental Health Act, Section 48'   
+	When LeglCat = '19' Then 'Formally detained under the Mental Health Act, Section 135'   
+	When LeglCat = '20' Then 'Formally detained under the Mental Health Act, Section 136'   
+	When LeglCat = '21' Then 'Formally detained under the previous legislation (fifth schedule)'   
+	When LeglCat = '22' Then 'Formally detained under Criminal Procedure (Insanity) Act 1964 as amended by the Criminal Procedures (Insanity and Unfitness to Plead) Act 1991'   
+	When LeglCat = '23' Then 'Formally detained under other Acts'   
+	When LeglCat = '24' Then 'Supervised discharge under the Mental Health (Patients in the Community) Act 1995'   
+	When LeglCat = '25' Then 'Formally detained under the Mental Health Act, Section 45A'   
+	When LeglCat = '26' Then 'Not applicable'   
+	When LeglCat = '27' Then 'Not known'
+	else 'Value Unknown'
+	END AS DESCRIPTION
+	 INTO dbo.Dimleglcat
+FROM RawNHS
+
+--Table 8 for newnhsno_Check
+IF OBJECT_ID ('dbo.Dimnewnhsno_check') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.Dimnewnhsno_check
+End
+SELECT DISTINCT
+     newnhsno_check as ID,
+	 CASE
+	When newnhsno_check = 'Y' Then 'Yes'
+	When newnhsno_check = 'N' Then 'No' 
+	END AS DESCRIPTION
+	 INTO dbo.Dimnewnhsno_check
+FROM RawNHS
+
+--Table 9 for DimAdmiMeth
+IF OBJECT_ID ('dbo.DimAdmimeth') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.DimAdmimeth
+End
+Select Distinct	
+	admimeth as ID,
+	Case 
+	When admimeth = '11' then 'Waiting List'
+	When admimeth = '12' then 'Booked'
+	When admimeth = '13' then 'Planned'
+	When admimeth = '21' then 'Accident and emergency or dental casualty department of the Health Care Provider'
+	When admimeth = '22' then 'General Practitioner'
+	When admimeth = '23' then 'Bed bureau'
+	When admimeth = '24' then 'Consultant Clinic, of this or another Health Care Provider'
+	When admimeth = '25' then 'Admission via Mental Health Crisis Resolution Team'
+	When admimeth = '2A' then 'Accident and Emergency Department of another provider where the patient had not been admitted'
+	When admimeth = '2B' then 'Transfer of an admitted patient from another Hospital Provider in an emergency'
+	When admimeth = '2C' then 'Baby born at home as intended'
+	When admimeth = '2D' then 'Other emergency admission'
+	When admimeth = '28' then 'Other means'
+	When admimeth = '31' then 'Admitted ante-partum'
+	When admimeth = '32' then 'Admitted post-partum'
+	When admimeth = '82' then 'The birth of a baby in this Health Care Provider'
+	When admimeth = '81' then 'Transfer of any admitted patient from other Hospital Provider other than in an emergency'
+	When admimeth = '83' then 'Baby born outside the Health Care Provider except when born at home as intended'
+	When admimeth = '84' then 'Admission by Admissions Panel of a High Security Psychiatric Hospital, patient not entered on the HSPH Admissions Waiting List'
+	When admimeth = '89' then 'HSPH Admissions Waiting List of a High Security Psychiatric Hospital '
+	When admimeth = '98' then 'Not applicable'
+	When admimeth = '99' then 'Not known'
+	End as Description
+	Into dbo.DimAdmimeth
+from RawNHS
+
+--Table 10 for DimAdminSorc
+IF OBJECT_ID ('dbo.DimAdmiSorc') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.DimAdmiSorc
+End
+Select Distinct	
+	admisorc as ID,
+	Case 
+	When admisorc = '19' Then 'The usual place of residence, unless listed below, for example, a private dwelling whether owner occupied or owned by Local Authority, housing association or other landlord. This includes wardened accommodation but not residential accommodation where health care is provided. It also includes PATIENTS with no fixed abode.' 
+	When admisorc = '29' Then 'Temporary place of residence when usually resident elsewhere, for example, hotels and residential educational establishments' 
+	When admisorc = '30' Then 'Repatriation from high security psychiatric hospital (1999-00 to 2006-07)'   
+	When admisorc = '37' Then 'Penal establishment: court (1999-00 to 2006-07)' 
+	When admisorc = '38' Then 'Penal establishment: police station (1999-00 to 2006-07)' 
+	When admisorc = '39' Then 'Penal establishment, Court or Police Station /  Police Custody Suite' 
+	When admisorc = '48' Then 'High security psychiatric hospital, Scotland (1999-00 to 2006-07)' 
+	When admisorc = '49' Then 'NHS other hospital provider: high security psychiatric accommodation in an NHS hospital provider (NHS trust or NHS Foundation Trust)' 
+	When admisorc = '50' Then 'NHS other hospital provider: medium secure unit (1999-00 to 2006-07)' 
+	When admisorc = '51' Then 'NHS other hospital provider: ward for general patients or the younger physically disabled or A&E department' 
+	When admisorc = '52' Then 'NHS other hospital provider: ward for maternity patients or neonates' 
+	When admisorc = '53' Then 'NHS other hospital provider: ward for patients who are mentally ill or have learning disabilities' 
+	When admisorc = '54' then 'NHS run Care Home' 
+	When admisorc = '65' Then 'Local authority residential accommodation i.e. where care is provided'  
+	When admisorc = '66' Then 'Local authority foster care, but not in residential accommodation' 
+	When admisorc = '69' Then 'Local authority home or care (1989-90 to 1995-96)' 
+	When admisorc = '79' Then 'Babies born in or on the way to hospital' 
+	When admisorc = '85' Then 'Non-NHS (other than Local Authority) run care home' 
+	When admisorc = '86' Then 'Non-NHS (other than Local Authority) run nursing home' 
+	When admisorc = '87' Then 'Non-NHS run hospital'  
+	When admisorc = '88' Then 'non-NHS (other than Local Authority) run hospice'  
+	When admisorc = '89' Then 'Non-NHS institution (1989-90 to 1995-96)' 
+	When admisorc = '98' Then 'Not applicable'
+	When admisorc = '99' Then 'Not known'
+	End as Description
+	Into dbo.DimAdmiSorc
+from RawNHS
+
+--Table 11 for DimElecdur
+IF OBJECT_ID ('dbo.DimElecdur') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.DimElecdur
+	End
+Select Distinct 
+	elecdur as ID,
+	Case 
+	When elecdur = '9998' then 'Not applicable' 
+	When elecdur = '9998' then 'Not Known' 
+	When elecdur = 'Null' then 'Not Known' 
+	Else elecdur
+End as Description
+	Into dbo.DimElecdur
+from RawNHS
+
+--Table 12 for DimClasspat
+IF OBJECT_ID ('dbo.DimClasspat') IS NOT NULL
+BEGIN
+     DROP TABLE dbo.DimClasspat
+end
+Select Distinct 
+	classpat as ID,
+	Case 
+     WHEN classpat = '1' THEN 'Ordinary admission'
+     WHEN classpat = '2' THEN 'Day case admission'
+	 When classpat = '3' Then 'Regular day attender'
+	 When classpat = '4' then 'Regular night attender'
+	 When classpat = '5' then 'Mothers and babies using only delivery facilities'
+	 When classpat = '8' then 'Not applicable'
+	 When classpat = '9' then 'Not known'
+	
+	End as Description
+	Into dbo.DimClasspat
+from RawNHS
+
+-- The following code is written to create Join Tables. The Columns have been renamed to more 'humanly readable' format which makes it easier to understand especially for export purposes.
+Select 
+	hesid PatientIdentifier,
+	lopatid LocalPatientIdentifier, 
+	s.Description as Sex,
+	dob as DOB,
+	nck.description as NHSNumCheck,
+	episode EpisodeNumber,
+	epistart EpisodeStart,
+	epiend EpisodeEnd,
+	ep.Description as EpisodeType,
+	Datediff(dd,epistart,epiend) BedDaysPerDataYear,
+	epidur EpisodeDuration,
+	es.Description as EpisodeStatus,
+	spellbgin BeginningOfSpell,
+	activage ActiveAge,
+	admiage AdmissionAge,
+	ad.description as AdministrativeCategory,
+	ads.description as AdministrativeCategoryStartOfEpisode,
+	c.description as Category,
+	endage EndAge,
+	et.Description as Ethnos,
+	l.description as LegalCategory,
+	admistart AdmissionStart,
+	startage AgeOnAdmission,
+	adm.Description as AdmissionMethod,
+	ads.description as AdmissionSource,
+	elecdate DateOfDecisionToAdmit,
+	eld.description as DurationOfElectiveWait,
+	cl.description as PatientClassification,
+	diag_01 as Diagnosis
+-- A left join is used to join the above columns from RawNHS a table with the newly created tables below.
+
+from RawNHS a
+
+	left join DimEpitype ep on a.epitype = ep.ID
+	left join DimSex s on a.sex = s.ID
+	left join DimEpistat es on a.epistat = es.ID
+	left join DimAdminCat ad on a.admincat = ad.ID
+	left join DimCat c on a.category = c.ID
+	left join Dimleglcat l on a.leglcat = l.ID
+	left join DimAdmimeth adm on a.admimeth = adm.ID 
+	left join DimAdmiSorc ads on a.admisorc = ads.id
+	left join Dimnewnhsno_check nck on a.newnhsno_check = nck.id
+	left join DimElecdur eld on a.elecdur = eld.ID
+	left join DimClasspat cl on a.classpat = cl.ID
+	left join DimEthnos et on a.ethnos = et.ID
